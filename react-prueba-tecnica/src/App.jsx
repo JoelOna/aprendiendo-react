@@ -1,43 +1,25 @@
-import { useEffect, useState } from 'react'
 import './App.css'
-
-
-const CAT_ENDPOINT_RANDOM_FACT = 'https://catfact.ninja/fact'
+import { useCatImage } from './hooks/useCatImage'
+import { useCatFact } from './hooks/useCatFact'
+import { Otro } from './Components/Otro.jsx'
 
 function App() {
 
-  const [fact,setFact] = useState()
-  const [imageUrl,setImageUrl] = useState()
+  const {fact,refreshRandomFact} = useCatFact()
+  const {imageUrl} = useCatImage({fact})  
 
-  useEffect(()=>{
-    fetch(CAT_ENDPOINT_RANDOM_FACT)
-      .then(res => res.json())
-      .then(data => {
-        const {fact} = data
-        setFact(fact)
-       
-      })
-  },[])
 
-  useEffect(()=>{
-    if (!fact) return
-
-    const firstWord = fact.split('',1)
-
-    fetch(`https://cataas.com/cat/says/${firstWord}?size=50&color=red&json=true`)
-      .then(res => res.json())
-      .then(data => {
-        const {url} = data
-        console.log(data)
-        const newUrl = `https://cataas.com${url}`
-        setImageUrl(newUrl)
-      })
-  },[fact])
+  const handleClick = async ()=>{
+     refreshRandomFact()
+  }
 
   return (
     <>
+    <button onClick={handleClick}>Get new fact</button>
     {fact && <p>{fact}</p>}
     {imageUrl && <img src={imageUrl}></img>}
+
+    <Otro/>
     </>
   )
 }
